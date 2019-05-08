@@ -1,12 +1,3 @@
-" Filename:  ~/.vim/ftplugin/nerdtree.vim
-" Purpose: Given a Visual-Line selection in the NERDTree buffer, this code
-" lets you open all selected files with the same key mappings, which, by
-" default, are:
-"   o - open files in previous window
-"   i - open files in horizontally split windows
-"   s - open files in vertically split windows
-"   t - open files in new tabs
-
 execute "vnoremap <buffer> " . g:NERDTreeMapActivateNode . " :call <SID>ProcessSelection('Opening', function('NERDTree_Open', ['p']), 1)<CR>"
 execute "vnoremap <buffer> " . g:NERDTreeMapOpenSplit .    " :call <SID>ProcessSelection('Opening', function('NERDTree_Open', ['h']), 1)<CR>"
 execute "vnoremap <buffer> " . g:NERDTreeMapOpenVSplit .   " :call <SID>ProcessSelection('Opening', function('NERDTree_Open', ['v']), 1)<CR>"
