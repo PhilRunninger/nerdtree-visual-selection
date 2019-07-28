@@ -15,6 +15,11 @@ function! NERDTree_Open(target, node)
 endfunction
 
 function! s:ProcessSelection(action, callback, closeWhenDone, confirmEachNode) range
+    if b:NERDTree.isWinTree()
+        echomsg "Command is unavailable. Open NERDTree with :NERDTree, :NERDTreeToggle, or :NERDTreeFocus instead."
+        return
+    endif
+
     let l:response = 0
     let curLine = a:firstline
     while curLine <= a:lastline
