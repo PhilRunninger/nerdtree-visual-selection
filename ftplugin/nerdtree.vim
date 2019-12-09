@@ -17,10 +17,18 @@ function! NERDTree_Open(target, node)
 endfunction
 
 function! NERDTree_MoveOrCopy(operation, node)
-    if !exists('g:destination')
-        let g:destination = input('Destination directory: ', g:NERDTreeFileNode.GetSelected().path.str(), 'dir')
+    if !exists('s:destination')
+        let s:destination = a:node.path.str()
+        if !a:node.path.isDirectory
+            let s:destination = fnamemodify(s:destination, ':p:h')
+        endif
+        let s:destination = input('Destination directory: ', s:destination, 'dir')
+        let s:destination .= (s:destination =~# nerdtree#slash().'$' ? '' : nerdtree#slash())
+        if !isdirectory(s:destination)
+            call mkdir(s:destination, 'p')
+        endif
     endif
-    let l:destination = g:destination . fnamemodify(a:node.path.str(), ':p:t')
+    let l:destination = s:destination . fnamemodify(a:node.path.str(), ':p:t')
     if a:operation == 'Moving'
         call a:node.rename(l:destination)
     else
@@ -52,7 +60,7 @@ function! s:ProcessSelection(action, callback, closeWhenDone, confirmEachNode) r
     let g:NERDTreeOldSortOrder = []
     call b:NERDTree.root.refresh()
     call NERDTreeRender()
-    unlet! g:destination
+    unlet! s:destination
     if a:action == 'Moving'
         echomsg "Check your buffers for files that have been renamed."
     endif
