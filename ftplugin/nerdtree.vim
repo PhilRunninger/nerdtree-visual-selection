@@ -3,6 +3,8 @@ execute "vnoremap <buffer> " . g:NERDTreeMapOpenSplit .    " :call <SID>ProcessS
 execute "vnoremap <buffer> " . g:NERDTreeMapOpenVSplit .   " :call <SID>ProcessSelection('Opening', function('NERDTree_Open', ['v']), 1, 0)<CR>"
 execute "vnoremap <buffer> " . g:NERDTreeMapOpenInTab .    " :call <SID>ProcessSelection('Opening', function('NERDTree_Open', ['t']), 1, 0)<CR>"
 execute "vnoremap <buffer> dd :call <SID>ProcessSelection('Deleting', function('NERDTree_Delete'), 0, 1)<CR>"
+execute "vnoremap <buffer> m :call <SID>ProcessSelection('Moving', function('NERDTree_MoveOrCopy', ['Moving']), 0, 1)<CR>"
+execute "vnoremap <buffer> c :call <SID>ProcessSelection('Copying', function('NERDTree_MoveOrCopy', ['Copying']), 0, 1)<CR>"
 
 function! NERDTree_Delete(node)
     call a:node.delete()
@@ -11,6 +13,18 @@ endfunction
 function! NERDTree_Open(target, node)
     if !empty(a:node) && !a:node.path.isDirectory
         silent call a:node.open({'where':a:target,'stay':1,'keepopen':1})
+    endif
+endfunction
+
+function! NERDTree_MoveOrCopy(operation, node)
+    if !exists('g:destination')
+        let g:destination = input('Destination directory: ', g:NERDTreeFileNode.GetSelected().path.str(), 'dir')
+    endif
+    let l:destination = g:destination . fnamemodify(a:node.path.str(), ':p:t')
+    if a:operation == 'Moving'
+        call a:node.rename(l:destination)
+    else
+        call a:node.copy(l:destination)
     endif
 endfunction
 
@@ -35,7 +49,14 @@ function! s:ProcessSelection(action, callback, closeWhenDone, confirmEachNode) r
         let curLine += 1
     endwhile
 
+    let g:NERDTreeOldSortOrder = []
+    call b:NERDTree.root.refresh()
     call NERDTreeRender()
+    unlet! g:destination
+    if a:action == 'Moving'
+        echomsg "Check your buffers for files that have been renamed."
+    endif
+
     if g:NERDTreeQuitOnOpen && a:closeWhenDone
         NERDTreeClose
     endif
