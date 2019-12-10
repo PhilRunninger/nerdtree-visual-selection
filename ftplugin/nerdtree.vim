@@ -47,7 +47,6 @@ function! NERDTree_MoveOrCopy(operation, node)
 endfunction
 
 function! POST_MoveOrCopy()
-    let g:NERDTreeOldSortOrder = []
     unlet! s:destination
 endfunction
 
@@ -82,6 +81,7 @@ function! s:ProcessSelection(action, init, callback, finish, closeWhenDone, conf
         call a:finish()
     endif
 
+    let g:NERDTreeOldSortOrder = []
     call b:NERDTree.root.refresh()
     call NERDTreeRender()
 
