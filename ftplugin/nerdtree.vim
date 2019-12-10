@@ -1,23 +1,65 @@
-execute "vnoremap <buffer> " . g:NERDTreeMapActivateNode . " :call <SID>ProcessSelection('Opening', function('NERDTree_Open', ['p']), 1, 0)<CR>"
-execute "vnoremap <buffer> " . g:NERDTreeMapOpenSplit .    " :call <SID>ProcessSelection('Opening', function('NERDTree_Open', ['h']), 1, 0)<CR>"
-execute "vnoremap <buffer> " . g:NERDTreeMapOpenVSplit .   " :call <SID>ProcessSelection('Opening', function('NERDTree_Open', ['v']), 1, 0)<CR>"
-execute "vnoremap <buffer> " . g:NERDTreeMapOpenInTab .    " :call <SID>ProcessSelection('Opening', function('NERDTree_Open', ['t']), 1, 0)<CR>"
-execute "vnoremap <buffer> dd :call <SID>ProcessSelection('Deleting', function('NERDTree_Delete'), 0, 1)<CR>"
+execute "vnoremap <buffer> " . g:NERDTreeMapActivateNode . " :call <SID>ProcessSelection('Opening', '', function('NERDTree_Open', ['p']), '', 1, 0)<CR>"
+execute "vnoremap <buffer> " . g:NERDTreeMapOpenSplit .    " :call <SID>ProcessSelection('Opening', '', function('NERDTree_Open', ['h']), '', 1, 0)<CR>"
+execute "vnoremap <buffer> " . g:NERDTreeMapOpenVSplit .   " :call <SID>ProcessSelection('Opening', '', function('NERDTree_Open', ['v']), '', 1, 0)<CR>"
+execute "vnoremap <buffer> " . g:NERDTreeMapOpenInTab .    " :call <SID>ProcessSelection('Opening', '', function('NERDTree_Open', ['t']), '', 1, 0)<CR>"
+execute "vnoremap <buffer> dd :call <SID>ProcessSelection('Deleting', '', function('NERDTree_Delete'), '', 0, 1)<CR>"
+execute "vnoremap <buffer> m :call <SID>ProcessSelection('Moving',  function('PRE_MoveOrCopy'), function('NERDTree_MoveOrCopy', ['Moving']), function('POST_MoveOrCopy'), 0, 1)<CR>"
+execute "vnoremap <buffer> c :call <SID>ProcessSelection('Copying', function('PRE_MoveOrCopy'), function('NERDTree_MoveOrCopy', ['Copying']), function('POST_MoveOrCopy'), 0, 1)<CR>"
 
+" --------------------------------------------------------------------------------
+" Delete
 function! NERDTree_Delete(node)
     call a:node.delete()
 endfunction
 
+" --------------------------------------------------------------------------------
+" Open
 function! NERDTree_Open(target, node)
     if !empty(a:node) && !a:node.path.isDirectory
         silent call a:node.open({'where':a:target,'stay':1,'keepopen':1})
     endif
 endfunction
 
-function! s:ProcessSelection(action, callback, closeWhenDone, confirmEachNode) range
+" --------------------------------------------------------------------------------
+" Move or copy
+function! PRE_MoveOrCopy()
+    let node = g:NERDTreeFileNode.GetSelected()
+    if !exists('s:destination')
+        let s:destination = node.path.str()
+        if !node.path.isDirectory
+            let s:destination = fnamemodify(s:destination, ':p:h')
+        endif
+        let s:destination = input('Destination directory: ', s:destination, 'dir')
+        let s:destination .= (s:destination =~# nerdtree#slash().'$' ? '' : nerdtree#slash())
+        if !isdirectory(s:destination)
+            call mkdir(s:destination, 'p')
+        endif
+    endif
+endfunction
+
+function! NERDTree_MoveOrCopy(operation, node)
+    let l:destination = s:destination . fnamemodify(a:node.path.str(), ':t')
+    if a:operation == 'Moving'
+        call a:node.rename(l:destination)
+    else
+        call a:node.copy(l:destination)
+    endif
+endfunction
+
+function! POST_MoveOrCopy()
+    unlet! s:destination
+endfunction
+
+" --------------------------------------------------------------------------------
+" Main Processor
+function! s:ProcessSelection(action, setup, callback, cleanup, closeWhenDone, confirmEachNode) range
     if b:NERDTree.isWinTree()
-        echomsg "Command is unavailable. Open NERDTree with :NERDTree, :NERDTreeToggle, or :NERDTreeFocus instead."
+        call nerdtree#echo("Command is unavailable. Open NERDTree with :NERDTree, :NERDTreeToggle, or :NERDTreeFocus instead.")
         return
+    endif
+
+    if type(a:setup) == v:t_func
+        call a:setup()
     endif
 
     let l:response = 0
@@ -35,7 +77,14 @@ function! s:ProcessSelection(action, callback, closeWhenDone, confirmEachNode) r
         let curLine += 1
     endwhile
 
+    if type(a:cleanup) == v:t_func
+        call a:cleanup()
+    endif
+
+    let g:NERDTreeOldSortOrder = []
+    call b:NERDTree.root.refresh()
     call NERDTreeRender()
+
     if g:NERDTreeQuitOnOpen && a:closeWhenDone
         NERDTreeClose
     endif
