@@ -52,14 +52,14 @@ endfunction
 
 " --------------------------------------------------------------------------------
 " Main Processor
-function! s:ProcessSelection(action, init, callback, finish, closeWhenDone, confirmEachNode) range
+function! s:ProcessSelection(action, setup, callback, cleanup, closeWhenDone, confirmEachNode) range
     if b:NERDTree.isWinTree()
         call nerdtree#echo("Command is unavailable. Open NERDTree with :NERDTree, :NERDTreeToggle, or :NERDTreeFocus instead.")
         return
     endif
 
-    if type(a:init) == v:t_func
-        call a:init()
+    if type(a:setup) == v:t_func
+        call a:setup()
     endif
 
     let l:response = 0
@@ -77,8 +77,8 @@ function! s:ProcessSelection(action, init, callback, finish, closeWhenDone, conf
         let curLine += 1
     endwhile
 
-    if type(a:finish) == v:t_func
-        call a:finish()
+    if type(a:cleanup) == v:t_func
+        call a:cleanup()
     endif
 
     let g:NERDTreeOldSortOrder = []
