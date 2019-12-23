@@ -1,3 +1,8 @@
+if exists("g:nerdtree_visual_selection")
+    finish
+endif
+let g:nerdtree_visual_selection = 1
+
 execute "vnoremap <buffer> " . g:NERDTreeMapActivateNode . " :call <SID>ProcessSelection('Opening', '', function('NERDTree_Open', ['p']), '', 1, 0)<CR>"
 execute "vnoremap <buffer> " . g:NERDTreeMapOpenSplit .    " :call <SID>ProcessSelection('Opening', '', function('NERDTree_Open', ['h']), '', 1, 0)<CR>"
 execute "vnoremap <buffer> " . g:NERDTreeMapOpenVSplit .   " :call <SID>ProcessSelection('Opening', '', function('NERDTree_Open', ['v']), '', 1, 0)<CR>"
