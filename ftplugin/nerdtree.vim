@@ -75,8 +75,11 @@ function! s:ProcessSelection(action, setup, callback, cleanup, closeWhenDone, co
         call nerdtree#echo(a:action . " " . node.path.str() . " (" . (curLine - a:firstline + 1) . " of " . (a:lastline - a:firstline + 1) . ")...")
         if a:confirmEachNode && l:response < 3
             let l:response = confirm("Are you sure? ", "&Yes\n&No\n&All\n&Cancel")
+            if l:response == 0  " Make Escape behave like Cancel
+                let l:response = 4
+            endif
         endif
-        if !a:confirmEachNode || l:response % 2 == 1
+        if !a:confirmEachNode || l:response == 1 || l:response == 3
             call a:callback(node)
         endif
         let curLine += 1
