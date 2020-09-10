@@ -1,9 +1,7 @@
 if exists("g:nerdtree_visual_selection")
     finish
 endif
-echomsg 'Loading nerdtree-visual-selection.'
 let g:nerdtree_visual_selection = 1
-echomsg "g:nerdtree_visual_selection=".g:nerdtree_visual_selection
 execute "vnoremap <buffer> " . g:NERDTreeMapActivateNode . " :call <SID>ProcessSelection('Opening', '', function('NERDTree_Open', ['p']), '', 1, 1)<CR>"
 execute "vnoremap <buffer> " . g:NERDTreeMapOpenSplit .    " :call <SID>ProcessSelection('Opening', '', function('NERDTree_Open', ['h']), '', 1, 1)<CR>"
 execute "vnoremap <buffer> " . g:NERDTreeMapOpenVSplit .   " :call <SID>ProcessSelection('Opening', '', function('NERDTree_Open', ['v']), '', 1, 1)<CR>"
@@ -11,20 +9,6 @@ execute "vnoremap <buffer> " . g:NERDTreeMapOpenInTab .    " :call <SID>ProcessS
 execute "vnoremap <buffer> dd :call <SID>ProcessSelection('Deleting', '', function('NERDTree_Delete'), '', 0, 1)<CR>"
 execute "vnoremap <buffer> m :call <SID>ProcessSelection('Moving',  function('PRE_MoveOrCopy'), function('NERDTree_MoveOrCopy', ['Moving']), function('POST_MoveOrCopy'), 0, 1)<CR>"
 execute "vnoremap <buffer> c :call <SID>ProcessSelection('Copying', function('PRE_MoveOrCopy'), function('NERDTree_MoveOrCopy', ['Copying']), function('POST_MoveOrCopy'), 0, 1)<CR>"
-echomsg 'Done with mappings. Here they are:'
-redir @a
-execute 'verbose vmap '.g:NERDTreeMapActivateNode
-execute 'verbose vmap '.g:NERDTreeMapOpenSplit
-execute 'verbose vmap '.g:NERDTreeMapOpenVSplit
-execute 'verbose vmap '.g:NERDTreeMapOpenInTab
-verbose vmap dd
-verbose vmap m
-verbose vmap c
-redir END
-for x in split(@a, "\n")
-    echomsg x
-endfor
-echomsg 'Now creating functions.'
 " --------------------------------------------------------------------------------
 " Delete
 function! NERDTree_Delete(node)
@@ -110,4 +94,3 @@ function! s:ProcessSelection(action, setup, callback, cleanup, closeWhenDone, co
 
     call nerdtree#echo("")
 endfunction
-echomsg "Done running script."
