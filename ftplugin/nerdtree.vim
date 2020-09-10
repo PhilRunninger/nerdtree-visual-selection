@@ -35,11 +35,16 @@ function! PRE_MoveOrCopy()
             let s:destination = fnamemodify(s:destination, ':p:h')
         endif
         let s:destination = input('Destination directory: ', s:destination, 'dir')
+        if s:destination == ''
+            unlet! s:destination
+            return 0
+        endif
         let s:destination .= (s:destination =~# nerdtree#slash().'$' ? '' : nerdtree#slash())
         if !isdirectory(s:destination)
             call mkdir(s:destination, 'p')
         endif
     endif
+    return 1
 endfunction
 
 function! NERDTree_MoveOrCopy(operation, node)
@@ -64,7 +69,9 @@ function! s:ProcessSelection(action, setup, callback, cleanup, closeWhenDone, co
     endif
 
     if type(a:setup) == v:t_func
-        call a:setup()
+        if !a:setup()
+            return
+        endif
     endif
 
     let l:response = 0
