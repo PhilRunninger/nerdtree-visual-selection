@@ -34,6 +34,6 @@ NERDTreeMapActivateNode | <kbd>o</kbd>  | Open selected files.
 NERDTreeMapOpenSplit    | <kbd>i</kbd>  | Open selected files in horizontal splits.
 NERDTreeMapOpenVSplit   | <kbd>s</kbd>  | Open selected files in vertical splits.
 NERDTreeMapOpenInTab    | <kbd>t</kbd>  | Open selected files in tabs.
-*n/a*                   | <kbd>dd</kbd> | Delete selected files from disk. If open in Vim, they remain open.
+*n/a*                   | <kbd>d</kbd> | Delete selected files from disk. If open in Vim, they remain open.
 *n/a*                   | <kbd>m</kbd>  | Move the selected files to another directory. If open in Vim, the buffer still points to its old location.
 *n/a*                   | <kbd>c</kbd>  | Copy selected files to another directory.
