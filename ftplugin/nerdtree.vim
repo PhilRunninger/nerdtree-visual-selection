@@ -11,6 +11,19 @@ execute "vnoremap <buffer> d :call <SID>ProcessSelection('Deleting', '', functio
 execute "vnoremap <buffer> m :call <SID>ProcessSelection('Moving',  function('PRE_MoveOrCopy'), function('NERDTree_MoveOrCopy', ['Moving']), function('POST_MoveOrCopy'), 0, ".g:nerdtree_vis_confirm_move.")<CR>"
 execute "vnoremap <buffer> c :call <SID>ProcessSelection('Copying', function('PRE_MoveOrCopy'), function('NERDTree_MoveOrCopy', ['Copying']), function('POST_MoveOrCopy'), 0, ".g:nerdtree_vis_confirm_copy.")<CR>"
 
+execute "vnoremap <buffer> <silent>" . g:NERDTreeMapJumpNextSibling .
+\" <esc>:call g:NERDTreeKeyMap.Invoke( g:NERDTreeMapJumpNextSibling )\<CR>mmgv'm"
+execute "vnoremap <buffer> <silent>" . g:NERDTreeMapJumpPrevSibling .
+\" <esc>:call g:NERDTreeKeyMap.Invoke( g:NERDTreeMapJumpPrevSibling )\<CR>mmgv'm"
+execute "vnoremap <buffer> <silent>" . g:NERDTreeMapJumpFirstChild .
+\" <esc>:call g:NERDTreeKeyMap.Invoke( g:NERDTreeMapJumpFirstChild )\<CR>mmgv'm"
+execute "vnoremap <buffer> <silent>" . g:NERDTreeMapJumpLastChild .
+\" <esc>:call g:NERDTreeKeyMap.Invoke( g:NERDTreeMapJumpLastChild )\<CR>mmgv'm"
+execute "vnoremap <buffer> <silent>" . g:NERDTreeMapJumpParent .
+\" <esc>:call g:NERDTreeKeyMap.Invoke( g:NERDTreeMapJumpParent)\<CR>mmgv'm"
+execute "vnoremap <buffer> <silent>" . g:NERDTreeMapJumpRoot .
+\" <esc>:call g:NERDTreeKeyMap.Invoke( g:NERDTreeMapJumpRoot)\<CR>mmgv'm"
+
 if exists("g:nerdtree_visual_selection")
     finish
 endif
@@ -70,6 +83,11 @@ endfunction
 function! s:ProcessSelection(action, setup, callback, cleanup, closeWhenDone, confirmEachNode) range
     if b:NERDTree.isWinTree()
         call nerdtree#echo("Command is unavailable. Open NERDTree with :NERDTree, :NERDTreeToggle, or :NERDTreeFocus instead.")
+        return
+    endif
+
+    if empty(g:NERDTreeFileNode.GetSelected())
+        call nerdtree#echo("Could not parse selection.")
         return
     endif
 
