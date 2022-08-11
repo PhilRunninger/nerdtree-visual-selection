@@ -11,19 +11,20 @@ execute "vnoremap <buffer> d :call <SID>ProcessSelection('Deleting', '', functio
 execute "vnoremap <buffer> m :call <SID>ProcessSelection('Moving',  function('PRE_MoveOrCopy'), function('NERDTree_MoveOrCopy', ['Moving']), function('POST_MoveOrCopy'), 0, ".g:nerdtree_vis_confirm_move.")<CR>"
 execute "vnoremap <buffer> c :call <SID>ProcessSelection('Copying', function('PRE_MoveOrCopy'), function('NERDTree_MoveOrCopy', ['Copying']), function('POST_MoveOrCopy'), 0, ".g:nerdtree_vis_confirm_copy.")<CR>"
 
-execute "vnoremap <buffer> <silent>" . g:NERDTreeMapJumpNextSibling .
-\" <esc>:call g:NERDTreeKeyMap.Invoke( g:NERDTreeMapJumpNextSibling )\<CR>mmgv'm"
-execute "vnoremap <buffer> <silent>" . g:NERDTreeMapJumpPrevSibling .
-\" <esc>:call g:NERDTreeKeyMap.Invoke( g:NERDTreeMapJumpPrevSibling )\<CR>mmgv'm"
-execute "vnoremap <buffer> <silent>" . g:NERDTreeMapJumpFirstChild .
-\" <esc>:call g:NERDTreeKeyMap.Invoke( g:NERDTreeMapJumpFirstChild )\<CR>mmgv'm"
-execute "vnoremap <buffer> <silent>" . g:NERDTreeMapJumpLastChild .
-\" <esc>:call g:NERDTreeKeyMap.Invoke( g:NERDTreeMapJumpLastChild )\<CR>mmgv'm"
-execute "vnoremap <buffer> <silent>" . g:NERDTreeMapJumpParent .
-\" <esc>:call g:NERDTreeKeyMap.Invoke( g:NERDTreeMapJumpParent)\<CR>mmgv'm"
-execute "vnoremap <buffer> <silent>" . g:NERDTreeMapJumpRoot .
-\" <esc>:call g:NERDTreeKeyMap.Invoke( g:NERDTreeMapJumpRoot)\<CR>mmgv'm"
+" --------------------------------------------------------------------------------
+" Jump Support
+function s:NERDTree_VisRemap(key)
+    return "vnoremap <buffer><silent>".eval(a:key)." <esc>:call g:NERDTreeKeyMap.Invoke(".a:key.")<CR>mmgv'm"
+endfunction
 
+execute s:NERDTree_VisRemap( "g:NERDTreeMapJumpNextSibling" )
+execute s:NERDTree_VisRemap( "g:NERDTreeMapJumpPrevSibling" )
+execute s:NERDTree_VisRemap( "g:NERDTreeMapJumpFirstChild" )
+execute s:NERDTree_VisRemap( "g:NERDTreeMapJumpLastChild" )
+execute s:NERDTree_VisRemap( "g:NERDTreeMapJumpParent" )
+execute s:NERDTree_VisRemap( "g:NERDTreeMapJumpRoot" )
+
+" --------------------------------------------------------------------------------
 if exists("g:nerdtree_visual_selection")
     finish
 endif
@@ -86,11 +87,6 @@ function! s:ProcessSelection(action, setup, callback, cleanup, closeWhenDone, co
         return
     endif
 
-    if empty(g:NERDTreeFileNode.GetSelected())
-        call nerdtree#echo("Could not parse selection.")
-        return
-    endif
-
     if type(a:setup) == v:t_func
         if !a:setup()
             return
@@ -102,6 +98,10 @@ function! s:ProcessSelection(action, setup, callback, cleanup, closeWhenDone, co
     while curLine <= a:lastline
         call cursor(curLine, 1)
         let node = g:NERDTreeFileNode.GetSelected()
+        if empty(node)
+            let curLine += 1
+            continue
+        endif
         call nerdtree#echo(a:action . " " . node.path.str() . " (" . (curLine - a:firstline + 1) . " of " . (a:lastline - a:firstline + 1) . ")...")
         if a:confirmEachNode && l:response < 3
             let l:response = confirm("Are you sure? ", "&Yes\n&No\n&All\n&Cancel")
