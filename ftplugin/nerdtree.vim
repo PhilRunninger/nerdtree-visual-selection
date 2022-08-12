@@ -13,8 +13,10 @@ execute "vnoremap <buffer> c :call <SID>ProcessSelection('Copying', function('PR
 
 " --------------------------------------------------------------------------------
 " Jump Support
+let g:nerdtree_vis_jumpmark = "n"
+
 function s:NERDTree_VisRemap(key)
-    return "vnoremap <buffer><silent>".eval(a:key)." <esc>:call g:NERDTreeKeyMap.Invoke(".a:key.")<CR>mmgv'm"
+  return "vnoremap <buffer><silent>" .eval(a:key) ." <esc>:call g:NERDTreeKeyMap.Invoke(" .a:key .")<CR>m" .g:nerdtree_vis_jumpmark ."gv'" .g:nerdtree_vis_jumpmark
 endfunction
 
 execute s:NERDTree_VisRemap( "g:NERDTreeMapJumpNextSibling" )
