@@ -2,6 +2,8 @@ let g:nerdtree_vis_confirm_open = get(g:, 'nerdtree_vis_confirm_open', 1)
 let g:nerdtree_vis_confirm_delete = get(g:, 'nerdtree_vis_confirm_delete', 1)
 let g:nerdtree_vis_confirm_move = get(g:, 'nerdtree_vis_confirm_move', 1)
 let g:nerdtree_vis_confirm_copy = get(g:, 'nerdtree_vis_confirm_copy', 1)
+let g:nerdtree_vis_confirm_append_arglist = get(g:, 'nerdtree_vis_confirm_append_arglist', 1)
+let g:nerdtree_vis_confirm_set_arglist = get(g:, 'nerdtree_vis_confirm_set_arglist', 1)
 
 execute "vnoremap <buffer> " . g:NERDTreeMapActivateNode . " :call <SID>ProcessSelection('Opening', '', function('NERDTree_Open', ['p']), '', 1, ".g:nerdtree_vis_confirm_open.")<CR>"
 execute "vnoremap <buffer> " . g:NERDTreeMapOpenSplit .    " :call <SID>ProcessSelection('Opening', '', function('NERDTree_Open', ['h']), '', 1, ".g:nerdtree_vis_confirm_open.")<CR>"
@@ -10,6 +12,8 @@ execute "vnoremap <buffer> " . g:NERDTreeMapOpenInTab .    " :call <SID>ProcessS
 execute "vnoremap <buffer> d :call <SID>ProcessSelection('Deleting', '', function('NERDTree_Delete'), '', 0, ".g:nerdtree_vis_confirm_delete.")<CR>"
 execute "vnoremap <buffer> m :call <SID>ProcessSelection('Moving',  function('PRE_MoveOrCopy'), function('NERDTree_MoveOrCopy', ['Moving']), function('POST_MoveOrCopy'), 0, ".g:nerdtree_vis_confirm_move.")<CR>"
 execute "vnoremap <buffer> c :call <SID>ProcessSelection('Copying', function('PRE_MoveOrCopy'), function('NERDTree_MoveOrCopy', ['Copying']), function('POST_MoveOrCopy'), 0, ".g:nerdtree_vis_confirm_copy.")<CR>"
+execute "vnoremap <buffer> a :call <SID>ProcessSelection('Appending to arglist', '', function('NERDTree_AppendToArglist'), '', 0, ".g:nerdtree_vis_confirm_append_arglist.")<CR>"
+execute "vnoremap <buffer> A :call <SID>ProcessSelection('Setting arglist', function('NERDTree_DeleteArglist'), function('NERDTree_AppendToArglist'), '', 0, ".g:nerdtree_vis_confirm_set_arglist.")<CR>"
 
 " --------------------------------------------------------------------------------
 " Jump Support
@@ -79,6 +83,26 @@ endfunction
 
 function! POST_MoveOrCopy()
     unlet! s:destination
+endfunction
+
+" --------------------------------------------------------------------------------
+" Append to Arglist
+function! NERDTree_DeleteArglist()
+    execute "argdelete *"
+    return 1
+endfunction
+
+function! NERDTree_AppendToArglist(node)
+    let l:file = a:node.path.str()
+    if filereadable(l:file)
+        execute "argadd " . l:file
+        return 1
+    else
+        call nerdtree#echo("File not found: Make sure the file exists and is readable.")
+        return 0
+    endif
+
+    return 0
 endfunction
 
 " --------------------------------------------------------------------------------

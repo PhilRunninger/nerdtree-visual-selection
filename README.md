@@ -23,6 +23,8 @@ By default, all operations ask to be confirmed with a `Yes/No/All/Cancel` prompt
 * `g:nerdtree_vis_confirm_delete`
 * `g:nerdtree_vis_confirm_copy`
 * `g:nerdtree_vis_confirm_move`
+* `g:nerdtree_vis_confirm_append_arglist`
+* `g:nerdtree_vis_confirm_set_arglist`
 
 A [mark](http://vimdoc.sourceforge.net/htmldoc/motion.html#mark-motions) is used to make your NERDTree's `Jump` mappings work while keeping your selection. By default the mark is on the `n` key, if you already use this key for a mark inside NERDTree you can change it via `g:nerdtree_vis_jumpmark`
 
@@ -39,6 +41,8 @@ NERDTreeMapOpenInTab    | <kbd>t</kbd>  | Open selected files in tabs.
 *n/a*                   | <kbd>d</kbd> | Delete selected files from disk. If open in Vim, they remain open.
 *n/a*                   | <kbd>m</kbd>  | Move the selected files to another directory. If open in Vim, the buffer still points to its old location.
 *n/a*                   | <kbd>c</kbd>  | Copy selected files to another directory.
+*n/a*                   | <kbd>a</kbd>  | Append selected files to the arglist. If a directory is selected, it is ignored. Only files will be added.
+*n/a*                   | <kbd>A</kbd>  | Set the arglist to only selected file. This overwrites the previeous arglist. If a directory is selected, it is ignored. Only files will be added.
 NERDTreeMapJumpRoot        | <kbd>P</kbd>    | Jump to the tree root.
 NERDTreeMapJumpParent      | <kbd>p</kbd>    | Jump to the parent node of the cursor node.
 NERDTreeMapJumpFirstChild  | <kbd>K</kbd>    | Jump to the first child of the cursor node's parent.
